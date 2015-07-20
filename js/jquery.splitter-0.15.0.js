@@ -1,6 +1,7 @@
 /*!
  * JQuery Spliter Plugin
  * Copyright (C) 2010-2013 Jakub Jankiewicz <http://jcubic.pl>
+ * This fork: 2015 Tim St.Clair <https://github.com/frumbert>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -20,15 +21,36 @@
     var splitter_id = null;
     var splitters = [];
     var current_splitter = null;
-    $.fn.split = function(options) {
+    $.fn.splitr = function(options) {
         var data = this.data('splitter');
-        if (data) {
+		if (typeof options == 'string') {
+			switch (options) { // balls to it
+				case "refresh":
+					data.refresh();
+					break;
+				case "size":
+					data.size(arguments[1]);
+					break;
+				case "lock":
+					data.settings.locked = true;
+					break;
+				case "unlock":
+					data.settings.locked = false;
+					break;
+				case "destroy":
+					data.destroy();
+					break;
+			}
+			return;
+		}
+        if (data) { // already split
             return data;
         }
         var panel_1;
         var panel_2;
         var settings = $.extend({
             limit: 100,
+            locked: false,
             orientation: 'horizontal',
             position: '50%',
             invisible: false,
@@ -60,6 +82,7 @@
         }).bind('mouseleave touchend', function() {
             splitter_id = null;
         }).insertAfter(panel_1);
+        if (settings.locked) splitter.css("cursor","auto");
         var position;
 
         function get_position(position) {
@@ -86,6 +109,25 @@
         }
 
         var self = $.extend(this, {
+	        size: function(pos) {
+	            if (typeof pos === 'number') {
+	                self.position(pos);
+	            } else if (typeof pos === 'string') {
+	                var match = pos.match(/^([0-9\.]+)(px|%)$/);
+	                if (match) {
+	                    if (match[2] == 'px') {
+	                        pos = +match[1];
+	                    } else {
+	                        if (settings.orientation == 'vertical') {
+	                            pos = (width * +match[1]) / 100;
+	                        } else if (settings.orientation == 'horizontal') {
+	                            pos = (height * +match[1]) / 100;
+	                        }
+	                    }
+						self.position(pos);
+	                }
+	            }
+	        },
             refresh: function() {
                 var new_width = this.width();
                 var new_height = this.height();
@@ -231,18 +273,21 @@
             $(document.documentElement).bind('mousedown.splitter touchstart.splitter', function(e) {
                 if (splitter_id !== null) {
                     current_splitter = splitters[splitter_id];
+	                if (current_splitter.settings.locked) return;
                     $('<div class="splitterMask"></div>').css('cursor', current_splitter.children().eq(1).css('cursor')).insertAfter(current_splitter);
                     current_splitter.settings.onDragStart(e);
                     return false;
                 }
             }).bind('mouseup.splitter touchend.splitter touchleave.splitter touchcancel.splitter', function(e) {
                 if (current_splitter) {
+	                if (current_splitter.settings.locked) return;
                     $('.splitterMask').remove();
                     current_splitter.settings.onDragEnd(e);
                     current_splitter = null;
                 }
             }).bind('mousemove.splitter touchmove.splitter', function(e) {
                 if (current_splitter !== null) {
+	                if (current_splitter.settings.locked) return;
                     var limit = current_splitter.limit;
                     var offset = current_splitter.offset();
                     if (current_splitter.orientation == 'vertical') {
