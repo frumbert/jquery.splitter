@@ -20,24 +20,24 @@ $('#foo').splitr({
 
 # Settable options
 
-`limit`: pixel amount as minimum size
-`position`: number or pixel value representing position from top/left
-`orientation`: 'horizontal' or 'vertical'
-`locked`: whether splitter is draggble
-`invisible`: whether the splitter bar is visible
-`onDrag`: function executed whilst dragging
-`onDragStart`: function executed when dragging begins
-`onDragEnd`: function executed when dragging finishes
+- `limit`: pixel amount as minimum size
+- `position`: number or pixel value representing position from top/left
+- `orientation`: 'horizontal' or 'vertical'
+- `locked`: whether splitter is draggble
+- `invisible`: whether the splitter bar is visible
+- `onDrag`: function executed whilst dragging
+- `onDragStart`: function executed when dragging begins
+- `onDragEnd`: function executed when dragging finishes
 
 # Methods
 
 Called like this `$inst.splitr("refresh")`.
 
-`"refresh"`: cause the current splitter to re-paint
-`"size",n`: sets the current position from top/left (px or %) to `n`
-`"lock"`: locks the splitter
-`"unlock"`: unlocks the splitter
-`"destroy"`: removes the splitter, events, and leaves everything "as is"
+- `"refresh"`: cause the current splitter to re-paint
+- `"size",n`: sets the current position from top/left (px or %) to `n`
+- `"lock"`: locks the splitter
+- `"unlock"`: unlocks the splitter
+- `"destroy"`: removes the splitter, events, etc
 
 # Demo (original fork)
 
